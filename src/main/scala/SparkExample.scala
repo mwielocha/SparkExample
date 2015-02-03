@@ -5,11 +5,11 @@ import scala.concurrent.duration.Duration
 
 object SparkExample extends App {
 
-  def profile[R](function: => R): R = {
+  def profile[R](units: Duration => Any)(function: => R): R = {
     val startTime = nanoTime
     val r = function
     val duration = Duration.fromNanos(nanoTime - startTime)
-    println(s"Calculation took ${duration.toMillis} millis.")
+    println(s"Calculation took ${units(duration)} millis.")
     r
   }
 
@@ -26,16 +26,16 @@ object SparkExample extends App {
 
   //new SparkApp(sparkContext) with WordCount1 - this throws Task not serializable: java.io.NotSerializableException
 
-//  new SparkApp(sparkContext) with WordCount2
-//  new SparkApp(sparkContext) with WordCount3
-//  new SparkApp(sparkContext) with WordCount4
-//  new SparkApp(sparkContext) with WordCount5
+  new SparkApp(sparkContext) with WordCount2
+  new SparkApp(sparkContext) with WordCount3
+  new SparkApp(sparkContext) with WordCount4
+  new SparkApp(sparkContext) with WordCount5
 
-  profile {
+  profile(_.toMillis) {
     new SparkApp(sparkContext) with WordCount6
   }
 
-//  profile {
-//    new SparkApp(sparkContext) with RatingCount
-//  }
+  profile(_.toMillis) {
+    new SparkApp(sparkContext) with RatingCount
+  }
 }
